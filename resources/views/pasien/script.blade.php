@@ -33,14 +33,56 @@
         });
 
         // 02. Process Save
-
         $('body').on('click', '.add-button', function(e) {
             e.preventDefault();
             $('#exampleModal').modal('show');
             $('.save-button').click(function(){
+                save();
+            });
+        });
+
+        // 04. Process EDIT
+        $('body').on('click', '.edit-button', function(e) {
+            var id = $(this).data('id');
+            $.ajax({
+                url: 'pasienAjax/' + id + '/edit',
+                type: 'GET',
+                success: function(response) {
+                    $('#exampleModal').modal('show');
+                    $('#nama').val(response.result.nama);
+                    $('#email').val(response.result.email);
+                    console.log(response.result);
+                    $('.save-button').click(function(){
+                    save(id);
+            });
+                }
+            });
+        });
+
+        // 05. Process Delete
+        $('body').on('click', '.delete-button', function(e) {
+            if (confirm('Yakin mau hapus data ini?') == true) {
+                var id = $(this).data('id');
                 $.ajax({
-                    url:'pasienAjax',
-                    type:'POST',
+                    url: 'pasienAjax/' +id,
+                    type: 'DELETE',
+                });
+                $('#myTable').DataTable().ajax.reload();
+            }
+        });
+
+        // Fungsi Save & Update
+        function save(id = ''){
+            if(id == ''){
+                var var_url = 'pasienAjax';
+                var var_type = 'POST';
+            } else {
+                var var_url = 'pasienAjax/' + id;
+                var var_type = 'PUT';
+            }
+            $.ajax({
+                    url: var_url,
+                    type: var_type,
                     data:{
                        nama: $('#nama').val(),
                         email: $('#email').val()
@@ -61,6 +103,6 @@
                         $('#myTable').DataTable().ajax.reload();
                     }
                 });
-            })
-        })
+        }
+
     </script>
